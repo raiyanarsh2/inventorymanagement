@@ -1,9 +1,7 @@
 package com.inventorymanagement.controllers;
 
-import com.inventorymanagement.entity.Customer;
 import com.inventorymanagement.entity.Item;
 import com.inventorymanagement.service.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +15,6 @@ public class ItemController {
 
 	private final ItemService itemService;
 
-	@Autowired
 	public ItemController(ItemService itemService) {
 		this.itemService = itemService;
 	}
@@ -38,6 +35,14 @@ public class ItemController {
 	public ResponseEntity<List<Item>> getAllItems() {
 		List<Item> items = itemService.findAllItems();
 		return new ResponseEntity<>(items, HttpStatus.OK);
+	}
+
+	@PutMapping
+	public ResponseEntity<Item> updateItem(@RequestBody Item item) {
+		Item updatedItem = itemService.updateItem(item);
+		if (item != null)
+			return new ResponseEntity<>(updatedItem, HttpStatus.CREATED);
+		return new ResponseEntity<>(updatedItem, HttpStatus.NOT_FOUND);
 	}
 
 	@DeleteMapping("/{id}")

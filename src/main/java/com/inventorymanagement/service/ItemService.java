@@ -15,6 +15,12 @@ public class ItemService {
 	@Autowired
 	private ItemRepository itemRepository;
 
+	public Item updateItem(Item item) {
+
+		return itemRepository.save(item);
+
+	}
+
 	public Item saveItem(Item item) {
 		return itemRepository.save(item);
 	}
