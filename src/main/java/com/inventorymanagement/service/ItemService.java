@@ -1,5 +1,8 @@
 package com.inventorymanagement.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,20 +11,34 @@ import com.inventorymanagement.repository.ItemRepository;
 
 import jakarta.transaction.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 public class ItemService {
 
 	@Autowired
 	private ItemRepository itemRepository;
 
-	public Item updateItem(Item item) {
+public Item updateItem(Item updatedItem) {
+    Optional<Item> existingItemOptional = itemRepository.findById(updatedItem.getId());
 
-		return itemRepository.save(item);
+    if (existingItemOptional.isPresent()) {
+        Item existingItem = existingItemOptional.get();
 
-	}
+        // Update basic fields
+        existingItem.setName(updatedItem.getName());
+        existingItem.setDescription(updatedItem.getDescription());
+        existingItem.setPrice(updatedItem.getPrice());
+        existingItem.setQuantity(updatedItem.getQuantity());
+
+        // Update vendor if provided
+        if (updatedItem.getVendor() != null) {
+            existingItem.setVendor(updatedItem.getVendor());
+        }
+
+        return itemRepository.save(existingItem);
+    } else {
+        throw new RuntimeException("Item not found with ID: " + updatedItem.getId());
+    }
+}
 
 	public Item saveItem(Item item) {
 		return itemRepository.save(item);
