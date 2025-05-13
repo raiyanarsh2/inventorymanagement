@@ -3,6 +3,9 @@ package com.inventorymanagement.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.inventorymanagement.DTO.ItemDTO;
+import com.inventorymanagement.entity.Vendor;
+import com.inventorymanagement.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,39 @@ public class ItemService {
 	@Autowired
 	private ItemRepository itemRepository;
 
-public Item updateItem(Item updatedItem) {
+    @Autowired
+    private VendorRepository vendorRepository;
+
+    public Item createItem(ItemDTO itemDTO) {
+        Item item = new Item();
+        item.setName(itemDTO.getName());
+        item.setDescription(itemDTO.getDescription());
+        item.setQuantity(itemDTO.getQuantity());
+        item.setPrice(itemDTO.getPrice());
+
+        Vendor vendor = vendorRepository.findById(itemDTO.getVendorId())
+                .orElseThrow(() -> new RuntimeException("Vendor not found"));
+
+        item.setVendor(vendor);
+        return itemRepository.save(item);
+    }
+
+    public Item createItemFromDTO(ItemDTO itemDTO) {
+        Item item = new Item();
+        item.setName(itemDTO.getName());
+        item.setDescription(itemDTO.getDescription());
+        item.setQuantity(itemDTO.getQuantity());
+        item.setPrice(itemDTO.getPrice());
+
+        Vendor vendor = vendorRepository.findById(itemDTO.getVendorId())
+                .orElseThrow(() -> new RuntimeException("Vendor not found with ID: " + itemDTO.getVendorId()));
+        item.setVendor(vendor);
+
+        return itemRepository.save(item);
+    }
+
+
+    public Item updateItem(Item updatedItem) {
     Optional<Item> existingItemOptional = itemRepository.findById(updatedItem.getId());
 
     if (existingItemOptional.isPresent()) {

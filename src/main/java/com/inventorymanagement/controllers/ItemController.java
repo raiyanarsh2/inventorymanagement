@@ -1,5 +1,6 @@
 package com.inventorymanagement.controllers;
 
+import com.inventorymanagement.DTO.ItemDTO;
 import com.inventorymanagement.entity.Item;
 import com.inventorymanagement.service.ItemService;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,8 @@ public class ItemController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Item> createItem(@RequestBody Item item) {
-		Item createdItem = itemService.saveItem(item);
+	public ResponseEntity<Item> createItem(@RequestBody ItemDTO itemDTO) {
+		Item createdItem = itemService.createItemFromDTO(itemDTO);
 		return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
 	}
 
