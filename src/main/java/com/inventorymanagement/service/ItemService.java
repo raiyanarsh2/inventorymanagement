@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import com.inventorymanagement.entity.Item;
 import com.inventorymanagement.repository.ItemRepository;
 
+import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -48,4 +50,20 @@ public class ItemService {
 			System.err.println("Item with ID " + itemId + " not found. Cannot add stock.");
 		}
 	}
+	
+	@Transactional
+    public void removeStock(Long itemId, int quantity) {
+        Optional<Item> itemOptional = itemRepository.findById(itemId);
+        if (itemOptional.isPresent()) {
+            Item item = itemOptional.get();
+            if (item.getQuantity() >= quantity) {
+                item.setQuantity(item.getQuantity() - quantity);
+                itemRepository.save(item);
+            } else {
+                throw new RuntimeException("Insufficient stock for item with id: " + itemId); 
+            }
+        } else {
+            throw new RuntimeException("Item not found with id: " + itemId);
+        }
+    }
 }

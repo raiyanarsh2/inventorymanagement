@@ -16,18 +16,30 @@ public class Customer {
     private String email;
     private String phoneNumber;
     private String address;
+    private String password;
 
     public Customer() {
     }
 
-    public Customer(String name, String email, String phoneNumber, String address) {
+    public Customer(String name, String email, String phoneNumber, String address, String password) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.password = password;
     }
 
-    public Long getId() {
+    
+    
+    public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Long getId() {
         return id;
     }
 
