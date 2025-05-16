@@ -1,16 +1,12 @@
 package com.inventorymanagement.DTO;
 
-import java.math.BigDecimal;
-
 public class InvoiceItemDTO {
-
     private Long id;
-    private int quantity;
-    private BigDecimal priceAtInvoice;
-    private ItemDTO item;
-
-    public InvoiceItemDTO() {
-    }
+    private String itemName;
+    private String itemDescription;
+    private Integer quantity;
+    private double unitPrice;
+    private double totalPrice;
 
     public Long getId() {
         return id;
@@ -20,27 +16,46 @@ public class InvoiceItemDTO {
         this.id = id;
     }
 
-    public int getQuantity() {
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
+    }
+
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPriceAtInvoice() {
-        return priceAtInvoice;
+    // Updated getters and setters
+    public double getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setPriceAtInvoice(BigDecimal priceAtInvoice) {
-        this.priceAtInvoice = priceAtInvoice;
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
-    public ItemDTO getItem() {
-        return item;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setItem(ItemDTO item) {
-        this.item = item;
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
+
+    // Other getters and setters remain unchanged
 }

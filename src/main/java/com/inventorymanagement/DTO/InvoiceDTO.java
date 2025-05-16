@@ -1,26 +1,20 @@
 package com.inventorymanagement.DTO;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class InvoiceDTO {
-
     private Long id;
-    private LocalDateTime invoiceDate;
-    private LocalDate dueDate;
-    private BigDecimal totalAmount;
-    private BigDecimal outstandingAmount;
+    private Long vendorId;
+    private String itemName;
+    private String itemDescription;
+    private int quantity;
+    private double unitPrice;
+    private double totalAmount;
     private String status;
-    private String invoiceType; // e.g., "BUY", "SELL"
-    private VendorDTO vendor;
-    private CustomerDTO customer;
-    private List<InvoiceItemDTO> invoiceItems;
+    private LocalDateTime createdDate;
+    private LocalDateTime paymentDate;
 
-    public InvoiceDTO() {
-    }
-
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -29,36 +23,52 @@ public class InvoiceDTO {
         this.id = id;
     }
 
-    public LocalDateTime getInvoiceDate() {
-        return invoiceDate;
+    public Long getVendorId() {
+        return vendorId;
     }
 
-    public void setInvoiceDate(LocalDateTime invoiceDate) {
-        this.invoiceDate = invoiceDate;
+    public void setVendorId(Long vendorId) {
+        this.vendorId = vendorId;
     }
 
-    public LocalDate getDueDate() {
-        return dueDate;
+    public String getItemName() {
+        return itemName;
     }
 
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
-    public BigDecimal getTotalAmount() {
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
+    public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
-    }
-
-    public BigDecimal getOutstandingAmount() {
-        return outstandingAmount;
-    }
-
-    public void setOutstandingAmount(BigDecimal outstandingAmount) {
-        this.outstandingAmount = outstandingAmount;
     }
 
     public String getStatus() {
@@ -69,35 +79,19 @@ public class InvoiceDTO {
         this.status = status;
     }
 
-    public String getInvoiceType() {
-        return invoiceType;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
-    public void setInvoiceType(String invoiceType) {
-        this.invoiceType = invoiceType;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public VendorDTO getVendor() {
-        return vendor;
+    public LocalDateTime getPaymentDate() {
+        return paymentDate;
     }
 
-    public void setVendor(VendorDTO vendor) {
-        this.vendor = vendor;
-    }
-
-    public CustomerDTO getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(CustomerDTO customer) {
-        this.customer = customer;
-    }
-
-    public List<InvoiceItemDTO> getInvoiceItems() {
-        return invoiceItems;
-    }
-
-    public void setInvoiceItems(List<InvoiceItemDTO> invoiceItems) {
-        this.invoiceItems = invoiceItems;
+    public void setPaymentDate(LocalDateTime paymentDate) {
+        this.paymentDate = paymentDate;
     }
 }
