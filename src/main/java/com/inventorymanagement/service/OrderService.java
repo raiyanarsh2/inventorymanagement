@@ -1,24 +1,22 @@
 package com.inventorymanagement.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.inventorymanagement.entity.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.inventorymanagement.DTO.OrderDTO;
-import com.inventorymanagement.entity.Customer;
-import com.inventorymanagement.entity.Item;
-import com.inventorymanagement.entity.Order;
-import com.inventorymanagement.entity.OrderItem;
 import com.inventorymanagement.repository.CustomerRepository;
 import com.inventorymanagement.repository.ItemRepository;
 import com.inventorymanagement.repository.OrderItemRepository;
 import com.inventorymanagement.repository.OrderRepository;
-
+import com.inventorymanagement.repository.CartRepository;
 @Service
 public class OrderService {
 
@@ -29,15 +27,17 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final CustomerRepository customerRepository;
     private final ItemRepository itemRepository;
-
+    private final CartRepository cartRepository;
     public OrderService(OrderRepository orderRepository,
             OrderItemRepository orderItemRepository,
             CustomerRepository customerRepository,
-            ItemRepository itemRepository) {
+            ItemRepository itemRepository,
+                        CartRepository cartRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.customerRepository = customerRepository;
         this.itemRepository = itemRepository;
+        this.cartRepository = cartRepository;
     }
 
     @Transactional
@@ -120,11 +120,137 @@ public class OrderService {
         return Optional.of(orderRepository.save(existingOrder));
     }
 
+//    @Transactional
+//    public boolean cancelOrder(Long id) {
+//        return orderRepository.findById(id).map(order -> {
+//            orderRepository.delete(order);
+//            return true;
+//        }).orElse(false);
+//    }
+
     @Transactional
     public boolean cancelOrder(Long id) {
         return orderRepository.findById(id).map(order -> {
+            // Restore item quantities
+            for (OrderItem orderItem : order.getOrderItems()) {
+                Item item = orderItem.getItem();
+                item.setQuantity(item.getQuantity() + orderItem.getQuantity());
+                itemRepository.save(item); // Update stock
+            }
+
+            // Delete the order
             orderRepository.delete(order);
             return true;
         }).orElse(false);
     }
+
+
+    @Transactional
+//    public OrderDTO proceedToCheckout(Long customerId) {
+//        // Fetch the customer
+//        Customer customer = customerRepository.findById(customerId)
+//                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+//
+//        // Fetch the cart
+//        Cart cart = cartRepository.findByCustomerId(customerId)
+//                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
+//
+//        if (cart.getItems().isEmpty()) {
+//            throw new IllegalArgumentException("Your cart is empty.");
+//        }
+//
+//        // Calculate the total amount for the order
+//        double totalAmount = 0.0;
+//        for (CartItem cartItem : cart.getItems()) {
+//            Item item = cartItem.getItem();
+//            // Check stock availability
+//            if (cartItem.getQuantity() > item.getQuantity()) {
+//                throw new IllegalArgumentException("Not enough stock for item: " + item.getName());
+//            }
+//            totalAmount += item.getPrice() * cartItem.getQuantity();
+//        }
+//
+//        // Create the order
+//        Order order = new Order();
+//        order.setOrderDate(LocalDateTime.now());
+//        order.setTotalAmount(totalAmount);
+//        order.setCustomer(customer);
+//
+//        // Add items to the order
+//        for (CartItem cartItem : cart.getItems()) {
+//            Item item = cartItem.getItem();
+//            OrderItem orderItem = new OrderItem(cartItem.getQuantity(), item.getPrice(), order, item);
+//            order.addOrderItem(orderItem);
+//        }
+//
+//        // Save the order
+//        Order savedOrder = orderRepository.save(order);
+//
+//        // Clear the cart after the order is placed
+//        cart.getItems().clear();
+//        cartRepository.save(cart);
+//
+//        // Return the order details
+//        return modelMapper.map(savedOrder, OrderDTO.class);
+//    }
+
+    public OrderDTO proceedToCheckout(Long customerId) {
+        // Fetch the customer
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        // Fetch the cart
+        Cart cart = cartRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
+
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Your cart is empty.");
+        }
+
+        // Calculate the total amount for the order
+        double totalAmount = 0.0;
+        for (CartItem cartItem : cart.getItems()) {
+            Item item = cartItem.getItem();
+            // Check stock availability
+            if (cartItem.getQuantity() > item.getQuantity()) {
+                throw new IllegalArgumentException("Not enough stock for item: " + item.getName());
+            }
+            totalAmount += item.getPrice() * cartItem.getQuantity();
+        }
+
+        // Create the order
+        Order order = new Order();
+        order.setOrderDate(LocalDateTime.now());
+        order.setTotalAmount(totalAmount);
+        order.setCustomer(customer);
+
+        // Add items to the order and update stock
+        for (CartItem cartItem : cart.getItems()) {
+            Item item = cartItem.getItem();
+
+            // Decrease the available stock
+            int newQuantity = item.getQuantity() - cartItem.getQuantity();
+            if (newQuantity < 0) {
+                throw new IllegalArgumentException("Not enough stock for item: " + item.getName());
+            }
+            item.setQuantity(newQuantity);
+
+            // Save the updated item to update stock in DB
+            itemRepository.save(item);
+
+            OrderItem orderItem = new OrderItem(cartItem.getQuantity(), item.getPrice(), order, item);
+            order.addOrderItem(orderItem);
+        }
+
+        // Save the order
+        Order savedOrder = orderRepository.save(order);
+
+        // Clear the cart after the order is placed
+        cart.getItems().clear();
+        cartRepository.save(cart);
+
+        // Return the order details
+        return modelMapper.map(savedOrder, OrderDTO.class);
+    }
+
 }

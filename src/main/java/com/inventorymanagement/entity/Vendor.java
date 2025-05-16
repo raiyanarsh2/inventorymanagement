@@ -2,6 +2,8 @@ package com.inventorymanagement.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +31,8 @@ public class Vendor {
 	private String address;
 
     @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JsonManagedReference
     private List<Item> items;
 
     public Vendor() {}

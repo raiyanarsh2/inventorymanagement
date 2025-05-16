@@ -12,7 +12,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/items")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class ItemController {
 
 	private final ItemService itemService;
@@ -28,24 +29,43 @@ public class ItemController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Item> getItemById(@PathVariable Long id) {
-		Optional<Item> item = itemService.findItemById(id);
-		return item.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	public ResponseEntity<ItemDTO> getItemById(@PathVariable Long id) {
+		Optional<ItemDTO> item = itemService.findItemByIdDTOs(id);
+		return item.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
+
 
 	@GetMapping
-	public ResponseEntity<List<Item>> getAllItems() {
-		List<Item> items = itemService.findAllItems();
-		return new ResponseEntity<>(items, HttpStatus.OK);
+	public ResponseEntity<List<ItemDTO>> getAllItems() {
+		List<ItemDTO> itemDTOs = itemService.findAllItemDTOs();
+		return new ResponseEntity<>(itemDTOs, HttpStatus.OK);
 	}
 
-	@PutMapping
-	public ResponseEntity<Item> updateItem(@RequestBody Item item) {
-		Item updatedItem = itemService.updateItem(item);
-		if (item != null)
-			return new ResponseEntity<>(updatedItem, HttpStatus.CREATED);
-		return new ResponseEntity<>(updatedItem, HttpStatus.NOT_FOUND);
+
+//	@GetMapping
+//	public ResponseEntity<List<Item>> getAllItems() {
+//		List<Item> items = itemService.findAllItems();
+//		return new ResponseEntity<>(items, HttpStatus.OK);
+//	}
+
+//	@PutMapping
+//	public ResponseEntity<Item> updateItem(@RequestBody Item item) {
+//		Item updatedItem = itemService.updateItem(item);
+//		if (item != null)
+//			return new ResponseEntity<>(updatedItem, HttpStatus.CREATED);
+//		return new ResponseEntity<>(updatedItem, HttpStatus.NOT_FOUND);
+//	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody ItemDTO itemDTO) {
+		Item updatedItem = itemService.updateItemFromDTO(id, itemDTO);
+		if (updatedItem != null) {
+			return new ResponseEntity<>(updatedItem, HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
+
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteItem(@PathVariable Long id) {

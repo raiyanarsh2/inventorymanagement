@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
+@CrossOrigin(origins = "*")
 public class OrderController {
 
 	private final OrderService orderService;
@@ -74,4 +75,18 @@ public class OrderController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
+
+	@PostMapping("/checkout/{customerId}")
+	public ResponseEntity<Map<String, String>> checkout(@PathVariable Long customerId) {
+		Map<String, String> response = new HashMap<>();
+		try {
+			OrderDTO orderDTO = orderService.proceedToCheckout(customerId);
+			response.put("message", "Order created successfully!");
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (IllegalArgumentException e) {
+			response.put("error", e.getMessage());  // Include the error message
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }

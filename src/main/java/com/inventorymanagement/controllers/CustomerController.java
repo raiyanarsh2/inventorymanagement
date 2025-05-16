@@ -1,5 +1,6 @@
 package com.inventorymanagement.controllers;
 
+import com.inventorymanagement.DTO.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class CustomerController {
 
 	@Autowired
@@ -66,4 +67,46 @@ public class CustomerController {
 		customerService.deleteCustomer(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+
+//	@PutMapping("/{id}")
+//	public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer updatedCustomer) {
+//		Optional<Customer> existingCustomerOptional = customerService.findCustomerById(id);
+//
+//		if (existingCustomerOptional.isPresent()) {
+//			Customer existingCustomer = existingCustomerOptional.get();
+//
+//			existingCustomer.setName(updatedCustomer.getName());
+//			existingCustomer.setEmail(updatedCustomer.getEmail());
+//			existingCustomer.setPhoneNumber(updatedCustomer.getPhoneNumber());
+//			existingCustomer.setAddress(updatedCustomer.getAddress());
+//			// Do not update password here unless specifically intended
+//
+//			Customer savedCustomer = customerService.saveCustomer(existingCustomer);
+//			return new ResponseEntity<>(savedCustomer, HttpStatus.OK);
+//		} else {
+//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//		}
+//	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO updatedCustomer) {
+		Optional<Customer> existingCustomerOptional = customerService.findCustomerById(id);
+
+		if (existingCustomerOptional.isPresent()) {
+			Customer existingCustomer = existingCustomerOptional.get();
+
+			existingCustomer.setName(updatedCustomer.getName());
+			existingCustomer.setEmail(updatedCustomer.getEmail());
+			existingCustomer.setPhoneNumber(updatedCustomer.getPhoneNumber());
+			existingCustomer.setAddress(updatedCustomer.getAddress());
+			// Password is NOT modified
+
+			Customer savedCustomer = customerService.saveCustomer(existingCustomer);
+			return new ResponseEntity<>(savedCustomer, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+
 }

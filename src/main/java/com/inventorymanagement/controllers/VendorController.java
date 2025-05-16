@@ -8,14 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.inventorymanagement.DTO.VendorDTO;
 import com.inventorymanagement.entity.Vendor;
@@ -23,6 +16,7 @@ import com.inventorymanagement.service.VendorService;
 
 @RestController
 @RequestMapping("/api/vendors")
+@CrossOrigin(origins = "*")
 public class VendorController {
 
 	@Autowired
@@ -96,11 +90,17 @@ public class VendorController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteVendor(@PathVariable Long id) {
-		boolean deleted = vendorService.deleteVendor(id); 
-		if (deleted) {
-			return ResponseEntity.noContent().build(); 
+		Optional<Vendor> existingVendor = vendorService.findVendorById(id);
+		if (existingVendor.isPresent()) {
+			boolean deleted = vendorService.deleteVendor(id);
+			if (deleted) {
+				return ResponseEntity.noContent().build(); // Successfully deleted
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Deletion failed
+			}
 		} else {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.notFound().build(); // Vendor not found
 		}
 	}
+
 }

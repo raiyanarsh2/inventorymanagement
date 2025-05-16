@@ -1,11 +1,9 @@
 package com.inventorymanagement.DTO;
 
 public class CustomerDTO {
-    private Long id;
+
+    Long id;
     private String name;
-    private String email;
-    private String phone;
-    private String address;
 
     public Long getId() {
         return id;
@@ -14,6 +12,14 @@ public class CustomerDTO {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    private String email;
+    private String phoneNumber;
+    private String address;
 
     public String getName() {
         return name;
@@ -31,12 +37,8 @@ public class CustomerDTO {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getAddress() {

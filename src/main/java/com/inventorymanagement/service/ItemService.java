@@ -2,6 +2,7 @@ package com.inventorymanagement.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.inventorymanagement.DTO.ItemDTO;
 import com.inventorymanagement.entity.Vendor;
@@ -87,7 +88,18 @@ public class ItemService {
 		return itemRepository.findAll();
 	}
 
-	public void deleteItem(Long id) {
+    public List<ItemDTO> findAllItemDTOs() {
+        List<Item> items = itemRepository.findAll();
+        return items.stream().map(ItemDTO::new).collect(Collectors.toList());
+    }
+
+    public Optional<ItemDTO> findItemByIdDTOs(Long id) {
+        Optional<Item> item = itemRepository.findById(id);
+        return item.map(ItemDTO::new);  // map item to itemDTO if present
+    }
+
+
+    public void deleteItem(Long id) {
 		itemRepository.deleteById(id);
 	}
 
@@ -118,4 +130,22 @@ public class ItemService {
             throw new RuntimeException("Item not found with id: " + itemId);
         }
     }
+
+    public Item updateItemFromDTO(Long id, ItemDTO itemDTO) {
+        Optional<Item> existingItemOpt = itemRepository.findById(id);
+        if (existingItemOpt.isEmpty()) return null;
+
+        Optional<Vendor> vendorOpt = vendorRepository.findById(itemDTO.getVendorId());
+        if (vendorOpt.isEmpty()) throw new IllegalArgumentException("Vendor not found");
+
+        Item existingItem = existingItemOpt.get();
+        existingItem.setName(itemDTO.getName());
+        existingItem.setDescription(itemDTO.getDescription());
+        existingItem.setQuantity(itemDTO.getQuantity());
+        existingItem.setPrice(itemDTO.getPrice());
+        existingItem.setVendor(vendorOpt.get());
+
+        return itemRepository.save(existingItem);
+    }
+
 }

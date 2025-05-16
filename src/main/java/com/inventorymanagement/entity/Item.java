@@ -1,5 +1,6 @@
 package com.inventorymanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,6 +22,7 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "vendor_id")
+    @JsonBackReference
     private Vendor vendor;
 
     public Item() {}

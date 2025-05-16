@@ -44,11 +44,13 @@ public class VendorService {
     }
 
     public boolean deleteVendor(Long id) {
-        if (vendorRepository.existsById(id)) {
-            vendorRepository.deleteById(id);
+        Optional<Vendor> vendorOptional = vendorRepository.findById(id);
+        if (vendorOptional.isPresent()) {
+            vendorRepository.deleteById(id); // Delete the vendor from DB
             return true;
         } else {
             return false;
         }
     }
+
 }
